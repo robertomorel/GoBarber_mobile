@@ -1,0 +1,14 @@
+Para usar as fontes do react-native-vector-icons:
+
+1. Instalar o pacote
+    - yarn add react-native-vector-icons
+2. Abrir o arquivo android/app/build.gradle
+3. No final do arquivo, add as linhas abaixo:
+-----------
+project.ext.vectoricons = [
+  iconFontNames: ['Feather.ttf']
+];
+
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+-----------
+4. Rodar yarn android
