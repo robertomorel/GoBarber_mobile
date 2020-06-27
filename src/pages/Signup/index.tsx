@@ -45,6 +45,7 @@ const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
   const passwordInputRef = useRef<TextInput>(null);
+  const passwordInputConfirmRef = useRef<TextInput>(null);
   const emailInputRef = useRef<TextInput>(null);
 
   const handleSignUp = useCallback(
@@ -58,6 +59,13 @@ const SignUp: React.FC = () => {
             .required('Email obrigatório!')
             .email('Digite um email válido!'),
           password: Yup.string().min(6, 'No mínimo 6 dígitos!'),
+          password_confirmation: Yup.string()
+            .when('password', {
+              is: val => !!val.length,
+              then: Yup.string().required('Campo obrigatório'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('password'), null], 'Confirmação incorreta'),
         });
 
         await schema.validate(data, {
@@ -87,7 +95,7 @@ const SignUp: React.FC = () => {
         );
       }
     },
-    [useCallback],
+    [navigation],
   );
 
   /**
@@ -153,6 +161,22 @@ const SignUp: React.FC = () => {
                 name="password"
                 icon="lock"
                 placeholder="Senha"
+                textContentType="newPassword"
+                returnKeyType="send" /* Transformar o ícone do return do keyboard */
+                onSubmitEditing={() => {
+                  // Função é disparada quando clicamos no botão do send (return)
+                  // Usado para que o usuário não precise fechar o keyboard e depois submeter.
+                  // Faz tudo de uma vez
+                  passwordInputConfirmRef.current?.focus();
+                }}
+              />
+
+              <Input
+                ref={passwordInputConfirmRef}
+                secureTextEntry
+                name="password_confirmation"
+                icon="lock"
+                placeholder="Confirmar senha"
                 textContentType="newPassword"
                 returnKeyType="send" /* Transformar o ícone do return do keyboard */
                 onSubmitEditing={() => {
